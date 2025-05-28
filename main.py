@@ -1,5 +1,11 @@
 import cv2
 import mediapipe as mp
+import math
+
+
+def calc_dist(p1, p2):
+    return math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2 + (p1.z - p2.z) ** 2)
+
 
 cam = cv2.VideoCapture(0)
 mp_drawing = mp.solutions.drawing_utils
@@ -12,6 +18,7 @@ with mp_hands.Hands(
         min_tracking_confidence=0.5) as hands:
     while cam.isOpened():
         result, frame = cam.read()
+        frame = cv2.flip(frame, 1)
         if not result:
             print("empty frame")
             continue
@@ -27,7 +34,15 @@ with mp_hands.Hands(
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
 
-        cv2.imshow("", cv2.flip(frame, 1))
+                thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
+                index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+                dist = calc_dist(thumb, index)
+                h, w = frame.shape[:2]
+                x, y = int(index.x * w), int(index.y * h)
+                cv2.putText(frame, str(round(dist, 2)), (x, y - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        cv2.imshow("hands tracking", frame)
         if cv2.waitKey(1) == ord('q'):
             break
 
