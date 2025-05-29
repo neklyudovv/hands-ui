@@ -11,6 +11,7 @@ cam = cv2.VideoCapture(0)
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
+color = (255, 255, 255)
 
 with mp_hands.Hands(
         model_complexity=0,
@@ -35,15 +36,15 @@ with mp_hands.Hands(
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
 
-                cv2.line(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cv2.line(frame, (x1, y1), (x2, y2), color, 2)
                 cv2.putText(frame, str(round(dist, 2)), (cx, cy),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                 mp_drawing.draw_landmarks(
                     frame,
                     hand_landmarks,
                     mp_hands.HAND_CONNECTIONS,
-                    mp_drawing_styles.get_default_hand_landmarks_style(),
-                    mp_drawing_styles.get_default_hand_connections_style())
+                    mp_drawing.DrawingSpec(color, 2, 2),
+                    mp_drawing.DrawingSpec(color, 2))
 
         cv2.imshow("hands tracking", frame)
         if cv2.waitKey(1) == ord('q'):
