@@ -26,9 +26,12 @@ with mp_hands.Hands(
 
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(image)
+        print(results.multi_handedness)
         if results.multi_hand_landmarks:
             h, w = frame.shape[:2]
-            for hand_landmarks in results.multi_hand_landmarks:
+            for hand_id, hand_landmarks in enumerate(results.multi_hand_landmarks):
+                hand_label = results.multi_handedness[hand_id].classification[0].label
+
                 thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
                 dist = calc_dist(thumb, index)
@@ -37,7 +40,7 @@ with mp_hands.Hands(
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
 
                 cv2.line(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(frame, str(round(dist, 2)), (cx, cy),
+                cv2.putText(frame, hand_label + str(round(dist, 2)), (cx, cy),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                 mp_drawing.draw_landmarks(
                     frame,
