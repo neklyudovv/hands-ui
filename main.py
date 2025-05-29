@@ -34,13 +34,13 @@ with mp_hands.Hands(
 
                 thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
-                dist = calc_dist(thumb, index)
+                dist = calc_dist(thumb, index) - 0.2
                 x1, y1 = int(index.x * w), int(index.y * h)
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
 
                 if hand.index == 0:
-                    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=dist*700)
+                    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=dist*300)
                 else:
                     blurred = cv2.GaussianBlur(frame, (0, 0), 3)
                     frame = cv2.addWeighted(frame, 1 + dist*10, blurred, -dist*10, 0)
