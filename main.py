@@ -29,8 +29,8 @@ with mp_hands.Hands(
         print(results.multi_handedness)
         if results.multi_hand_landmarks:
             h, w = frame.shape[:2]
-            for hand_id, hand_landmarks in enumerate(results.multi_hand_landmarks):
-                hand_label = results.multi_handedness[hand_id].classification[0].label
+            for i, hand_landmarks in enumerate(results.multi_hand_landmarks):
+                hand = results.multi_handedness[i].classification[0]
 
                 thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
@@ -39,8 +39,14 @@ with mp_hands.Hands(
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
 
+                if hand.index == 0:
+                    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=dist*700)
+                else:
+                    blurred = cv2.GaussianBlur(frame, (0, 0), 3)
+                    frame = cv2.addWeighted(frame, 1 + dist*10, blurred, -dist*10, 0)
+
                 cv2.line(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(frame, hand_label + str(round(dist, 2)), (cx, cy),
+                cv2.putText(frame, hand.label + str(round(dist, 2)), (cx, cy),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                 mp_drawing.draw_landmarks(
                     frame,
