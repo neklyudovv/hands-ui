@@ -26,7 +26,6 @@ with mp_hands.Hands(
 
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = hands.process(image)
-        print(results.multi_handedness)
         if results.multi_hand_landmarks:
             h, w = frame.shape[:2]
             for i, hand_landmarks in enumerate(results.multi_hand_landmarks):
@@ -34,7 +33,7 @@ with mp_hands.Hands(
 
                 thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
-                dist = calc_dist(thumb, index) - 0.2
+                dist = calc_dist(thumb, index) - 0.2  # change in parameter, not actual distance btw
                 x1, y1 = int(index.x * w), int(index.y * h)
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
