@@ -37,15 +37,17 @@ with mp_hands.Hands(
                 x1, y1 = int(index.x * w), int(index.y * h)
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
-
+                text = hand.label
                 if hand.index == 0:
+                    text = 'Brightness: ' + str(round(dist, 2))
                     frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=dist*300)
                 else:
+                    text = 'Blur: ' + str(round(dist, 2))
                     blurred = cv2.GaussianBlur(frame, (0, 0), 3)
                     frame = cv2.addWeighted(frame, 1 + dist*10, blurred, -dist*10, 0)
 
                 cv2.line(frame, (x1, y1), (x2, y2), color, 2)
-                cv2.putText(frame, hand.label + str(round(dist, 2)), (cx, cy),
+                cv2.putText(frame, text, (cx, cy),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                 mp_drawing.draw_landmarks(
                     frame,
