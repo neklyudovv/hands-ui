@@ -33,18 +33,18 @@ with mp_hands.Hands(
 
                 thumb = hand_landmarks.landmark[mp_hands.HandLandmark.THUMB_TIP]
                 index = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
-                dist = calc_dist(thumb, index) - 0.2  # change in parameter, not actual distance btw
+                param_change = calc_dist(thumb, index) - 0.2
                 x1, y1 = int(index.x * w), int(index.y * h)
                 x2, y2 = int(thumb.x * w), int(thumb.y * h)
                 cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
                 text = hand.label
                 if hand.index == 0:
-                    text = 'Brightness: ' + str(round(dist, 2))
-                    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=dist*300)
+                    text = 'Brightness: ' + str(round(param_change, 2))
+                    frame = cv2.convertScaleAbs(frame, alpha=1.0, beta=param_change * 300)
                 else:
-                    text = 'Blur: ' + str(round(dist, 2))
+                    text = 'Blur: ' + str(round(param_change, 2))
                     blurred = cv2.GaussianBlur(frame, (0, 0), 3)
-                    frame = cv2.addWeighted(frame, 1 + dist*10, blurred, -dist*10, 0)
+                    frame = cv2.addWeighted(frame, 1 + param_change * 10, blurred, -param_change * 10, 0)
 
                 cv2.line(frame, (x1, y1), (x2, y2), color, 2)
                 cv2.putText(frame, text, (cx, cy),
